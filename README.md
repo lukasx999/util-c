@@ -4,6 +4,5 @@
 
 ### Modules
 
-#### Dynarray
-
-Generic dynamic array library
+- Dynarray
+  - Generic dynamic array library
