@@ -9,32 +9,38 @@ DYNARRAY_DECL(List, list, int)
 DYNARRAY_IMPL(List, list, int)
 
 
+
 void test_arena(void) {
     Arena arena = { 0 };
     arena_init(&arena);
 
     size_t size = 15;
-    int *xs = arena_alloc(&arena, size * sizeof(int));
 
     for (size_t i=0; i < size; ++i) {
-        xs[i] = i;
-        printf("i: %d\n", xs[i]);
+        int *x = arena_alloc(&arena, sizeof(int));
+        assert(x != NULL);
+        assert(arena.items[i] == x);
     }
+
+    assert(arena.size == size);
 
     arena_free(&arena);
 }
 
 void test_dynarray(void) {
-    List list = list_new(5);
-    list_push(&list, 1);
-    list_push(&list, 2);
-    list_push(&list, 3);
+    List list = { 0 };
+    list_init(&list, 5);
 
-    assert(list.size == 3);
+    size_t size = 15;
 
-    assert(list.items[0] == 1);
-    assert(list.items[1] == 2);
-    assert(list.items[2] == 3);
+    for (size_t i=0; i < size; ++i) {
+        list_push(&list, (int) i);
+        assert(list.items[i] == (int) i);
+    }
+
+    assert(list.size == size);
+
+    list_destroy(&list);
 }
 
 int main(void) {

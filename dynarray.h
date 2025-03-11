@@ -5,28 +5,25 @@
 
 /* Declaration */
 
-#define DYNARRAY_DECL(structname, prefix, T)           \
-                                                       \
-typedef struct {                                       \
-    size_t cap, size;                                  \
-    T *items;                                          \
-} structname;                                          \
-                                                       \
-void       prefix##_init (structname *d, size_t cap);  \
-structname prefix##_new  (size_t cap);                 \
-void       prefix##_push (structname *d, T item);      \
+#define DYNARRAY_DECL(Structname, prefix, T)              \
+                                                          \
+typedef struct {                                          \
+    size_t cap, size;                                     \
+    T *items;                                             \
+} Structname;                                             \
+                                                          \
+void prefix##_init    (Structname *d, size_t cap);        \
+void prefix##_push    (Structname *d, T item);            \
+void prefix##_destroy (Structname *d);                    \
 
 /* ----------- */
 
-
-
-
 /* Implementation */
 
-#define DYNARRAY_IMPL(structname, prefix, T)              \
+#define DYNARRAY_IMPL(Structname, prefix, T)              \
                                                           \
-void prefix##_init(structname *d, size_t cap) {           \
-    *d = (structname) {                                   \
+void prefix##_init(Structname *d, size_t cap) {           \
+    *d = (Structname) {                                   \
         .items = NULL,                                    \
         .cap   = cap,                                     \
         .size  = 0,                                       \
@@ -34,20 +31,19 @@ void prefix##_init(structname *d, size_t cap) {           \
     d->items = malloc(d->cap * sizeof(T));                \
 }                                                         \
                                                           \
-structname prefix##_new(size_t cap) {                     \
-    structname dynarray = { 0 };                          \
-    prefix##_init(&dynarray, cap);                        \
-    return dynarray;                                      \
-}                                                         \
-                                                          \
-void prefix##_push(structname *d, T item) {               \
+void prefix##_push(Structname *d, T item) {               \
     if (d->size == d->cap) {                              \
         d->cap *= 2;                                      \
         d->items = realloc(d->items, d->cap * sizeof(T)); \
     }                                                     \
                                                           \
     d->items[d->size++] = item;                           \
-}                                                                                           \
+}                                                         \
+                                                          \
+void prefix##_destroy(Structname *d) {                    \
+    free(d->items);                                       \
+    d->items = NULL;                                      \
+}                                                         \
 
 /* -------------- */
 

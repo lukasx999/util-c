@@ -16,6 +16,7 @@ void *arena_alloc (Arena *a, size_t size);
 void  arena_free  (Arena *a);
 
 
+#define ARENA_IMPL
 #ifdef ARENA_IMPL
 
 void arena_init(Arena *a) {
