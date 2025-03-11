@@ -24,6 +24,16 @@ void test_arena(void) {
 
     assert(arena.size == size);
 
+
+
+    int *ptr = arena_alloc(&arena, sizeof(int));
+    *ptr = 1;
+
+    ptr = arena_realloc(&arena, ptr, 2 * sizeof(int));
+    ptr[1] = 2;
+
+    assert(ptr[0] == 1 && ptr[1] == 2);
+
     arena_free(&arena);
 }
 
