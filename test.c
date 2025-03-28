@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <assert.h>
+#include <string.h>
 
 #define ARENA_IMPL
 #include "arena.h"
@@ -7,6 +8,8 @@
 #include "dynarray.h"
 DYNARRAY_DECL(List, list, int)
 DYNARRAY_IMPL(List, list, int)
+
+#include "util.h"
 
 
 
@@ -53,8 +56,16 @@ void test_dynarray(void) {
     list_destroy(&list);
 }
 
+void test_read_entire_file(void) {
+    char *str = read_entire_file("./test_resources/file.txt");
+    NONNULL(str);
+    assert(!strcmp(str, "this is a file.\n"));
+    free(str);
+}
+
 int main(void) {
 
+    test_read_entire_file();
     test_arena();
     test_dynarray();
 
