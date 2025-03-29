@@ -50,7 +50,8 @@ static void _impl_panic(
 
 
 #define UNREACHABLE PANIC("unreachable")
-#define TODO(msg) PANIC("TODO: " msg)
+#define TODO(msg) PANIC("not implemented yet: " msg)
+#define UNIMPLEMENTED(msg) PANIC("not implemented: " msg)
 #define UNUSED __attribute__((unused))
 #define DISCARD(value) (void) (value); assert(0)
 
