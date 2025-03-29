@@ -102,12 +102,18 @@ void test_get_file_size(void) {
     test_size_t(size, 16L);
 }
 
+void test_string_expand_query(void) {
+    char *result = string_expand_query("foo {x} bar {x} baz {x}", "{x}", "XXX");
+    NON_NULL(result);
 
+    test_str(result, "foo XXX bar XXX baz XXX");
+
+    free(result);
+}
 
 int main(void) {
 
-
-    return 0;
+    test_string_expand_query();
     test_arena();
     test_dynarray();
     test_get_file_size();

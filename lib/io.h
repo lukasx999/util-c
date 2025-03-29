@@ -13,6 +13,20 @@
 #include "util.h"
 
 
+static inline
+int get_substring_count(const char *str, const char *query) {
+
+    NON_NULL(str);
+    NON_NULL(query);
+
+    int count = 0;
+    while ((str = strstr(str, query)) != NULL) {
+        count++;
+        str++;
+    }
+
+    return count;
+}
 
 // returns the size of the file specified by `path` in bytes
 // returns -1 in case of failure
@@ -54,21 +68,6 @@ char *read_entire_file(const char *path) {
 
     if (fclose(file) == EOF) return NULL;
     return buf;
-}
-
-static inline
-int get_substring_count(const char *str, const char *query) {
-
-    NON_NULL(str);
-    NON_NULL(query);
-
-    int count = 0;
-    while ((str = strstr(str, query)) != NULL) {
-        count++;
-        str++;
-    }
-
-    return count;
 }
 
 struct StringArray {
@@ -136,6 +135,25 @@ struct StringArray read_entire_file_lines(const char *path) {
     struct StringArray lines = tokenize_string(str, "\n");
     free(str);
     return lines;
+}
+
+static inline
+char *string_expand_query(const char *str, const char *query, const char *sub) {
+
+    int query_count = get_substring_count(str, query);
+    size_t bufsize = strlen(str) + query_count * strlen(sub);
+    char *buf = malloc(bufsize * sizeof(char));
+    if (buf == NULL) return NULL;
+
+    while ((str = strstr(str, query)) != NULL) {
+        str++;
+
+
+
+    }
+
+
+    return buf;
 }
 
 
