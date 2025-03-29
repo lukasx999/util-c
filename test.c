@@ -10,10 +10,8 @@ DYNARRAY_DECL(List, list, int)
 DYNARRAY_IMPL(List, list, int)
 
 #include "util.h"
-
+#include "io.h"
 #include "test.h"
-
-
 
 
 
@@ -74,10 +72,26 @@ void test_get_substring_count(void) {
 
 void test_tokenize_string(void) {
     struct StringArray tokens = tokenize_string("foo,bar,baz", ",");
-    test_str(tokens.items[0], "foo");
-    test_str(tokens.items[1], "bar");
-    test_str(tokens.items[2], "baz");
-    free_tokens(&tokens);
+    test_size_t(tokens.count, 3L);
+    test_str(tokens.strings[0], "foo");
+    test_str(tokens.strings[1], "bar");
+    test_str(tokens.strings[2], "baz");
+    free_stringarray(&tokens);
+}
+
+void test_read_file_lines(void) {
+    struct StringArray lines = read_entire_file_lines("./test_resources/file_with_lines.txt");
+    test_size_t(lines.count, 3L);
+    test_str(lines.strings[0], "line one");
+    test_str(lines.strings[1], "line two");
+    test_str(lines.strings[2], "line three");
+    free_stringarray(&lines);
+}
+
+void test_get_file_size(void) {
+    ssize_t size = get_file_size("./test_resources/file.txt");
+    assert(size != -1);
+    test_size_t(size, 16L);
 }
 
 int main(void) {
@@ -87,6 +101,7 @@ int main(void) {
     test_arena();
     test_dynarray();
     test_tokenize_string();
+    test_get_file_size();
 
     return 0;
 }

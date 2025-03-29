@@ -4,14 +4,13 @@
 
 
 #define test(value, expected, cond, fmt) do {                         \
-    if (!(cond)) {                                                    \
+    if (!(cond))                                                      \
         fprintf(                                                      \
             stderr,                                                   \
             "-> test `" #value " == " fmt "` failed, got " fmt " \n", \
             expected,                                                 \
             value                                                     \
         );                                                            \
-    }                                                                 \
 } while (0)
 
 #define test_eq(value, expected, fmt) \

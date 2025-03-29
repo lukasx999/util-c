@@ -1,5 +1,5 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#ifndef _IO_H
+#define _IO_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -7,33 +7,39 @@
 #include <string.h>
 #include <alloca.h>
 
+#include <sys/types.h>
 #include <sys/stat.h>
 
-
-
-#define ARRAY_LEN(xs) (sizeof(xs) / sizeof *(xs))
-#define NON_NULL(ptr) assert((ptr) != NULL)
-#define UNREACHABLE assert(!"unreachable");
-#define TODO(msg) assert(!"TODO: " msg);
-#define UNUSED __attribute__((unused))
-#define DISCARD(x) (void) (x); assert(0)
+#include "util.h"
 
 
 
-// reads the file from `path` into a nul-terminated buffer on the heap.
-// the returned pointer must be free'd.
-static inline char *read_entire_file(const char *path) {
+// returns the size of the file specified by `path` in bytes
+// returns -1 in case of failure
+static inline
+ssize_t get_file_size(const char *path) {
 
     NON_NULL(path);
 
-    FILE *file = fopen(path, "r");
-    if (file == NULL) return NULL;
-
     struct stat statbuf = { 0 };
     int err = stat(path, &statbuf);
-    if (err == -1) return NULL;
+    if (err == -1) return -1;
 
-    size_t size = statbuf.st_size;
+    return statbuf.st_size;
+}
+
+// reads the file from `path` into a nul-terminated buffer on the heap.
+// the returned pointer must be free'd.
+static inline
+char *read_entire_file(const char *path) {
+
+    NON_NULL(path);
+
+    ssize_t size = get_file_size(path);
+    if (size == -1) return NULL;
+
+    FILE *file = fopen(path, "r");
+    if (file == NULL) return NULL;
 
     // Allocate one extra byte for nul-termination
     char *buf = malloc((size + 1) * sizeof(char));
@@ -41,7 +47,7 @@ static inline char *read_entire_file(const char *path) {
     memset(buf, '\0', (size + 1) * sizeof(char));
 
     size_t bytes_read = fread(buf, sizeof(char), size, file);
-    if (bytes_read < size) {
+    if (bytes_read < (size_t) size) {
         if (ferror(file) < 0) return NULL;
         if (feof(file) < 0) UNREACHABLE;
     }
@@ -50,7 +56,8 @@ static inline char *read_entire_file(const char *path) {
     return buf;
 }
 
-static inline int get_substring_count(const char *str, const char *query) {
+static inline
+int get_substring_count(const char *str, const char *query) {
 
     int count = 0;
     while ((str = strstr(str, query)) != NULL) {
@@ -62,9 +69,9 @@ static inline int get_substring_count(const char *str, const char *query) {
 }
 
 struct StringArray {
-    char **items;
-    size_t bufsize;
-    size_t count;
+    char **strings;
+    size_t bufsize; // the size of each string buffer
+    size_t count; // the count of strings in the array
 };
 
 static inline
@@ -99,19 +106,20 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     }
 
     return (struct StringArray) {
-        .items   = tokens,
+        .strings   = tokens,
         .count   = count,
         .bufsize = bufsize,
     };
 }
 
-static inline void free_tokens(struct StringArray *tokens) {
+static inline
+void free_stringarray(struct StringArray *tokens) {
 
     NON_NULL(tokens);
 
     for (size_t i=0; i < 3; ++i)
-        free(tokens->items[i]);
-    free(tokens->items);
+        free(tokens->strings[i]);
+    free(tokens->strings);
 }
 
 static inline
@@ -123,5 +131,4 @@ struct StringArray read_entire_file_lines(const char *path) {
 }
 
 
-
-#endif // _UTIL_H
+#endif // _IO_H

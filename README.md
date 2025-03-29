@@ -4,6 +4,9 @@
 
 ### Modules
 
+- `io.h`
+  - Functions for doing file io
+
 - `util.h`
   - Convenience Macros for making Code more readable
 
