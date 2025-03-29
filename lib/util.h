@@ -21,7 +21,7 @@ static void _impl_panic(
 
 #ifdef _GNU_SOURCE
     pthread_t tid = pthread_self();
-    char name_buf[50] = { 0 };
+    char name_buf[16] = { 0 };
     pthread_getname_np(tid, name_buf, ARRAY_LEN(name_buf));
 
     fprintf(stderr, "Thread `%s` panicked at (%s: %s: %d)\n%s\n",
