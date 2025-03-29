@@ -10,7 +10,7 @@
 - `arena.h`
   - Arena Allocator implementation
 
-- `dynaray.h`
+- `dynarray.h`
   - Generic dynamic array implementation
 
 - `test.h`
