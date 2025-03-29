@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <assert.h>
 #include <pthread.h>
+#include <stdnoreturn.h>
 
 
 
@@ -12,7 +13,7 @@
 
 
 
-static void _impl_panic(
+noreturn static void _impl_panic(
     const char *msg,
     const char *file,
     const char *func,
@@ -72,19 +73,22 @@ static void _impl_panic(
 #define UNUSED __attribute__((unused))
 #define DISCARD(value) (void) (value); assert(0)
 
-// TODO: add formatting
-#define PRINT(x) do {      \
-    const char *fmt =      \
-        _Generic((x),      \
-            char:   "%c",  \
-            int:    "%d",  \
-            float:  "%f",  \
-            size_t: "%lu", \
-            char*:  "%s",  \
-            void*:  "%p"   \
-    );                     \
-    printf(fmt, x);        \
-    printf("\n");          \
+
+
+#define PRINT(x) do {           \
+    const char *fmt =           \
+        _Generic((x),           \
+            char:   "%c",       \
+            int:    "%d",       \
+            float:  "%f",       \
+            size_t: "%lu",      \
+            char*:  "%s",       \
+            void*:  "%p"        \
+    );                          \
+    printf("(%s:%d) " #x " = ", \
+        __FILE__, __LINE__);    \
+    printf(fmt, (x));           \
+    printf("\n");               \
 } while (0)
 
 
