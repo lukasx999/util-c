@@ -59,6 +59,9 @@ char *read_entire_file(const char *path) {
 static inline
 int get_substring_count(const char *str, const char *query) {
 
+    NON_NULL(str);
+    NON_NULL(query);
+
     int count = 0;
     while ((str = strstr(str, query)) != NULL) {
         count++;
@@ -71,8 +74,18 @@ int get_substring_count(const char *str, const char *query) {
 struct StringArray {
     char **strings;
     size_t bufsize; // the size of each string buffer
-    size_t count; // the count of strings in the array
+    size_t count;   // the count of strings in the array
 };
+
+static inline
+void free_stringarray(struct StringArray *tokens) {
+
+    NON_NULL(tokens);
+
+    for (size_t i=0; i < tokens->count; ++i)
+        free(tokens->strings[i]);
+    free(tokens->strings);
+}
 
 static inline
 struct StringArray tokenize_string(const char *str, const char *delim) {
@@ -106,20 +119,10 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     }
 
     return (struct StringArray) {
-        .strings   = tokens,
+        .strings = tokens,
         .count   = count,
         .bufsize = bufsize,
     };
-}
-
-static inline
-void free_stringarray(struct StringArray *tokens) {
-
-    NON_NULL(tokens);
-
-    for (size_t i=0; i < 3; ++i)
-        free(tokens->strings[i]);
-    free(tokens->strings);
 }
 
 static inline
@@ -127,8 +130,14 @@ struct StringArray read_entire_file_lines(const char *path) {
 
     NON_NULL(path);
 
-    return tokenize_string(path, "\n");
+    char *str = read_entire_file(path);
+    str[strlen(str) - 1] = '\0'; // remove trailing newline
+
+    struct StringArray lines = tokenize_string(str, "\n");
+    free(str);
+    return lines;
 }
+
 
 
 #endif // _IO_H
