@@ -105,7 +105,7 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     size_t count = get_substring_count(str, delim) + 1;
 
     char **tokens = malloc(count * sizeof(char*));
-    NON_NULL(tokens);
+    NON_NULL(tokens); // TODO: handle error
     size_t i = 0;
 
     size_t bufsize = strlen(str) + 1; // TODO: get size of largest token
@@ -115,6 +115,7 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
         NON_NULL(tokens[i]);
     }
 
+    // create mutable buffer of `str` so strtok() can write nullbytes into it
     char *buf = alloca((strlen(str) + 1) * sizeof(char));
     NON_NULL(buf);
     strncpy(buf, str, strlen(str) + 1);
@@ -122,9 +123,10 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     char *tok = strtok(buf, delim);
     strncpy(tokens[i++], tok, bufsize);
 
-    while ((tok = strtok(NULL, delim)) != NULL) {
+    while ((tok = strtok(NULL, delim)) != NULL)
         strncpy(tokens[i++], tok, bufsize);
-    }
+
+    assert(i == count);
 
     return (struct StringArray) {
         .strings = tokens,
@@ -149,6 +151,10 @@ struct StringArray read_entire_file_lines(const char *path) {
 
 static inline ALLOC
 char *string_expand_query(const char *str, const char *query, const char *sub) {
+
+    NON_NULL(str);
+    NON_NULL(query);
+    NON_NULL(sub);
 
     size_t query_count = get_substring_count(str, query);
     size_t bufsize = strlen(str) + query_count * strlen(sub) + 1;
