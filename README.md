@@ -4,5 +4,14 @@
 
 ### Modules
 
-- Dynarray
-  - Generic dynamic array library
+- `util.h`
+  - Convenience Macros for making Code more readable
+
+- `arena.h`
+  - Arena Allocator implementation
+
+- `dynaray.h`
+  - Generic dynamic array implementation
+
+- `test.h`
+  - Macros for writing unit tests

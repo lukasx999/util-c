@@ -11,6 +11,10 @@ DYNARRAY_IMPL(List, list, int)
 
 #include "util.h"
 
+#include "test.h"
+
+
+
 
 
 void test_arena(void) {
@@ -25,9 +29,7 @@ void test_arena(void) {
         assert(arena.items[i] == x);
     }
 
-    assert(arena.size == size);
-
-
+    test_size_t(arena.size, size);
 
     int *ptr = arena_alloc(&arena, sizeof(int));
     *ptr = 1;
@@ -48,26 +50,43 @@ void test_dynarray(void) {
 
     for (size_t i=0; i < size; ++i) {
         list_push(&list, (int) i);
-        assert(list.items[i] == (int) i);
+        test_int(list.items[i], (int) i);
     }
 
-    assert(list.size == size);
+    test_size_t(list.size, size);
 
     list_destroy(&list);
 }
 
 void test_read_entire_file(void) {
     char *str = read_entire_file("./test_resources/file.txt");
-    NONNULL(str);
-    assert(!strcmp(str, "this is a file.\n"));
+    test_str(str, "this is a file.\n");
     free(str);
+}
+
+void test_get_substring_count(void) {
+    test_int(get_substring_count(".", "."), 1);
+    test_int(get_substring_count("...", "."), 3);
+    test_int(get_substring_count("foo", " "), 0);
+    test_int(get_substring_count("foo bar", " "), 1);
+    test_int(get_substring_count("foo bar baz qux quux", " "), 4);
+}
+
+void test_tokenize_string(void) {
+    struct StringArray tokens = tokenize_string("foo,bar,baz", ",");
+    test_str(tokens.items[0], "foo");
+    test_str(tokens.items[1], "bar");
+    test_str(tokens.items[2], "baz");
+    free_tokens(&tokens);
 }
 
 int main(void) {
 
+    test_get_substring_count();
     test_read_entire_file();
     test_arena();
     test_dynarray();
+    test_tokenize_string();
 
     return 0;
 }
