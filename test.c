@@ -103,12 +103,52 @@ void test_get_file_size(void) {
 }
 
 void test_string_expand_query(void) {
-    char *result = string_expand_query("foo {x} bar {x} baz {x}", "{x}", "XXX");
-    NON_NULL(result);
 
-    test_str(result, "foo XXX bar XXX baz XXX");
+    char *s = string_expand_query("foo %%% bar %%% baz", "%%%", "ZZZ");
+    NON_NULL(s);
+    test_str(s, "foo ZZZ bar ZZZ baz");
+    free(s);
 
-    free(result);
+    s = string_expand_query("a%b%c%", "%", "/");
+    NON_NULL(s);
+    test_str(s, "a/b/c/");
+    free(s);
+
+    s = string_expand_query("_x_x_x_", "x", "FOO");
+    NON_NULL(s);
+    test_str(s, "_FOO_FOO_FOO_");
+    free(s);
+
+    s = string_expand_query("sub", "sub", "uuuuu");
+    NON_NULL(s);
+    test_str(s, "uuuuu");
+    free(s);
+
+    s = string_expand_query("", "sub", "uuuuu");
+    NON_NULL(s);
+    test_str(s, "");
+    free(s);
+
+    s = string_expand_query(" sub,subabcdefsub", "sub", "_________");
+    NON_NULL(s);
+    test_str(s, " _________,_________abcdef_________");
+    free(s);
+
+    s = string_expand_query("AAAjAAAbAAAx", "AAA", "-");
+    NON_NULL(s);
+    test_str(s, "-j-b-x");
+    free(s);
+
+    s = string_expand_query("abc", "/", "-");
+    NON_NULL(s);
+    test_str(s, "abc");
+    free(s);
+
+    s = string_expand_query("abc", "", "X");
+    NON_NULL(s);
+    test_str(s, "XaXbXcX");
+    free(s);
+
 }
 
 int main(void) {

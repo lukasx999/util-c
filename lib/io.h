@@ -13,6 +13,11 @@
 #include "util.h"
 
 
+// indicates a function that returns a pointer to heap-allocated memory
+#define ALLOC
+
+
+
 static inline
 int get_substring_count(const char *str, const char *query) {
 
@@ -44,7 +49,7 @@ ssize_t get_file_size(const char *path) {
 
 // reads the file from `path` into a nul-terminated buffer on the heap.
 // the returned pointer must be free'd.
-static inline
+static inline ALLOC
 char *read_entire_file(const char *path) {
 
     NON_NULL(path);
@@ -137,21 +142,47 @@ struct StringArray read_entire_file_lines(const char *path) {
     return lines;
 }
 
-static inline
+
+static inline ALLOC
 char *string_expand_query(const char *str, const char *query, const char *sub) {
 
+    // if (query[0] == '\0') return NULL;
+
     int query_count = get_substring_count(str, query);
-    size_t bufsize = strlen(str) + query_count * strlen(sub);
-    char *buf = malloc(bufsize * sizeof(char));
+    size_t bufsize = strlen(str) + query_count * strlen(sub) + 1;
+    char *buf = malloc(bufsize);
     if (buf == NULL) return NULL;
+    strncpy(buf, str, bufsize);
 
-    while ((str = strstr(str, query)) != NULL) {
-        str++;
+    char *last = NULL;
 
+    char *tmp = buf;
+    while ((tmp = strstr(tmp, query)) != NULL) {
 
+        // foo %%% bar %%% baz
+        // foo AAAAAAAA bar AAAAAAAA baz
+        // foo A bar A baz
+
+        // push the rest of the buffer back (or move it forward)
+        // to make space for replacement string
+        memmove(
+            tmp + strlen(sub),
+            tmp + strlen(query),
+            strlen(tmp) - strlen(query)
+        );
+
+        strncpy(tmp, sub, strlen(sub));
+        tmp++;
+
+        // this will point to one byte after the last char
+        // of the final substituted string in the last iteration
+        last = tmp + strlen(sub);
 
     }
 
+    // clean up gargabe if the buffer was truncated
+    if (strlen(sub) < strlen(query))
+        memset(last, 0, bufsize - (last - buf));
 
     return buf;
 }

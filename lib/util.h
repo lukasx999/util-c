@@ -43,10 +43,27 @@ static void _impl_panic(
         : value)
 
 
+// braced-groups are a GNU extension
+// #ifdef __GNUC__
+#if 0
+
+#define NON_NULL(ptr)                              \
+    ({                                             \
+        void *____ptr = (ptr);                     \
+        ____ptr == NULL                            \
+            ? PANIC("`" #ptr "` is NULL"), ____ptr \
+            : ____ptr;                             \
+    })
+
+#else // __GNUC__
+
+// NOTE: this macro is unsafe and might execute side-effects twice
 #define NON_NULL(ptr)                          \
     ((ptr) == NULL                             \
         ? PANIC("`" #ptr "` is NULL"), ptr     \
         : ptr)
+
+#endif // __GNUC__
 
 
 #define UNREACHABLE PANIC("unreachable")
@@ -55,6 +72,7 @@ static void _impl_panic(
 #define UNUSED __attribute__((unused))
 #define DISCARD(value) (void) (value); assert(0)
 
+// TODO: add formatting
 #define PRINT(x) do {      \
     const char *fmt =      \
         _Generic((x),      \
