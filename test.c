@@ -148,10 +148,10 @@ void test_string_expand_query(void) {
     free(s);
 
     // TODO:
-    // s = string_expand_query("abc", "", "X");
-    // NON_NULL(s);
-    // test_str(s, "XaXbXcX");
-    // free(s);
+    s = string_expand_query("abc", "", "X");
+    NON_NULL(s);
+    test_str(s, "XaXbXcX");
+    free(s);
 
 }
 
