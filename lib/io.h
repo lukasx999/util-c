@@ -19,12 +19,16 @@
 
 
 static inline
-int get_substring_count(const char *str, const char *query) {
+size_t get_substring_count(const char *str, const char *query) {
 
     NON_NULL(str);
     NON_NULL(query);
 
-    int count = 0;
+    // eg: (str = "abc", query = "") -> 4
+    if (strlen(query) == 0)
+        return strlen(str) + 1;
+
+    size_t count = 0;
     while ((str = strstr(str, query)) != NULL) {
         count++;
         str++;
@@ -98,7 +102,7 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     NON_NULL(delim);
 
     // eg: "foo bar": 1 delim -> 2 tokens
-    int count = get_substring_count(str, delim) + 1;
+    size_t count = get_substring_count(str, delim) + 1;
 
     char **tokens = malloc(count * sizeof(char*));
     NON_NULL(tokens);
@@ -106,7 +110,7 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
 
     size_t bufsize = strlen(str) + 1; // TODO: get size of largest token
 
-    for (size_t i=0; i < (size_t) count; ++i) {
+    for (size_t i=0; i < count; ++i) {
         tokens[i] = malloc(bufsize * sizeof(char));
         NON_NULL(tokens[i]);
     }
@@ -146,22 +150,26 @@ struct StringArray read_entire_file_lines(const char *path) {
 static inline ALLOC
 char *string_expand_query(const char *str, const char *query, const char *sub) {
 
-    // if (query[0] == '\0') return NULL;
-
-    int query_count = get_substring_count(str, query);
+    size_t query_count = get_substring_count(str, query);
     size_t bufsize = strlen(str) + query_count * strlen(sub) + 1;
     char *buf = malloc(bufsize);
     if (buf == NULL) return NULL;
     strncpy(buf, str, bufsize);
 
-    char *last = NULL;
+    if (strlen(query) == 0) {
+        // TODO:
+        TODO("edgecase: query is empty string");
+    }
 
+    char *last = NULL;
     char *tmp = buf;
     while ((tmp = strstr(tmp, query)) != NULL) {
 
+        // examples:
         // foo %%% bar %%% baz
         // foo AAAAAAAA bar AAAAAAAA baz
         // foo A bar A baz
+        // foo
 
         // push the rest of the buffer back (or move it forward)
         // to make space for replacement string
@@ -179,6 +187,9 @@ char *string_expand_query(const char *str, const char *query, const char *sub) {
         last = tmp + strlen(sub);
 
     }
+
+    // TODO: truncate buffer using `last`
+    // this will reduce memory usage and only use the actually needed space
 
     // clean up gargabe if the buffer was truncated
     if (strlen(sub) < strlen(query))

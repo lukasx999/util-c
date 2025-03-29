@@ -20,7 +20,7 @@
     test_eq(value, expected, "%p")
 
 #define test_size_t(value, expected) \
-    test_eq(value, expected, "%lu")
+    test_eq(value, (size_t) expected, "%lu")
 
 #define test_int(value, expected) \
     test_eq(value, expected, "%d")

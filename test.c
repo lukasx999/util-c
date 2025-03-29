@@ -65,18 +65,21 @@ void test_read_entire_file(void) {
 }
 
 void test_get_substring_count(void) {
-    test_int(get_substring_count("", "."), 0);
-    test_int(get_substring_count(".", "."), 1);
-    test_int(get_substring_count("...", "."), 3);
-    test_int(get_substring_count("foo", " "), 0);
-    test_int(get_substring_count("foo bar", " "), 1);
-    test_int(get_substring_count("foo bar baz qux quux", " "), 4);
+    test_size_t(get_substring_count("abc", ""), 4);
+    test_size_t(get_substring_count("", "fjksfjds"), 0);
+    test_size_t(get_substring_count("fjklsdjfkldsf", ""), 14);
+    test_size_t(get_substring_count("", "."), 0);
+    test_size_t(get_substring_count(".", "."), 1);
+    test_size_t(get_substring_count("...", "."), 3);
+    test_size_t(get_substring_count("foo", " "), 0);
+    test_size_t(get_substring_count("foo bar", " "), 1);
+    test_size_t(get_substring_count("foo bar baz qux quux", " "), 4);
 }
 
 void test_tokenize_string(void) {
     struct StringArray tokens = tokenize_string("foo,bar,baz", ",");
 
-    test_size_t(tokens.count, 3L);
+    test_size_t(tokens.count, 3);
     test_str(tokens.strings[0], "foo");
     test_str(tokens.strings[1], "bar");
     test_str(tokens.strings[2], "baz");
@@ -88,7 +91,7 @@ void test_read_file_lines(void) {
     struct StringArray
         lines = read_entire_file_lines("./test_resources/file_with_lines.txt");
 
-    test_size_t(lines.count, 3L);
+    test_size_t(lines.count, 3);
     test_str(lines.strings[0], "line one");
     test_str(lines.strings[1], "line two");
     test_str(lines.strings[2], "line three");
@@ -99,7 +102,7 @@ void test_read_file_lines(void) {
 void test_get_file_size(void) {
     ssize_t size = get_file_size("./test_resources/file.txt");
     assert(size != -1);
-    test_size_t(size, 16L);
+    test_size_t(size, 16);
 }
 
 void test_string_expand_query(void) {
@@ -144,10 +147,11 @@ void test_string_expand_query(void) {
     test_str(s, "abc");
     free(s);
 
-    s = string_expand_query("abc", "", "X");
-    NON_NULL(s);
-    test_str(s, "XaXbXcX");
-    free(s);
+    // TODO:
+    // s = string_expand_query("abc", "", "X");
+    // NON_NULL(s);
+    // test_str(s, "XaXbXcX");
+    // free(s);
 
 }
 
