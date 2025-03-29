@@ -1,7 +1,6 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-#define _GNU_SOURCE
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
@@ -20,12 +19,17 @@ static void _impl_panic(
     int line
 ) {
 
+#ifdef _GNU_SOURCE
     pthread_t tid = pthread_self();
     char name_buf[50] = { 0 };
     pthread_getname_np(tid, name_buf, ARRAY_LEN(name_buf));
 
     fprintf(stderr, "Thread `%s` panicked at (%s: %s: %d)\n%s\n",
             name_buf, file, func, line, msg);
+#else
+    fprintf(stderr, "Panicked at (%s: %s: %d)\n%s\n", file, func, line, msg);
+#endif // _GNU_SOURCE
+
     abort();
 }
 
