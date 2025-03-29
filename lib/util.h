@@ -6,6 +6,7 @@
 
 
 
+// TODO: make this act like an expression
 #define PANIC(msg) do {                                                          \
     fprintf(stderr, "Panicked at (%s: %s: %d)\n", __FILE__, __func__, __LINE__); \
     fprintf(stderr, "%s\n", msg);                                                \
