@@ -1,20 +1,50 @@
 #ifndef _UTIL_H
 #define _UTIL_H
 
-#include <assert.h>
+#define _GNU_SOURCE
 #include <stdio.h>
+#include <stdlib.h>
+#include <assert.h>
+#include <pthread.h>
 
 
-
-// TODO: make this act like an expression
-#define PANIC(msg) do {                               \
-    fprintf(stderr, "Panicked at (%s: %s: %d)\n%s\n", \
-                __FILE__, __func__, __LINE__, msg);   \
-    abort();                                          \
-} while (0)
 
 #define ARRAY_LEN(xs) (sizeof(xs) / sizeof *(xs))
-#define NON_NULL(ptr) assert((ptr) != NULL)
+
+
+
+static void _impl_panic(
+    const char *msg,
+    const char *file,
+    const char *func,
+    int line
+) {
+
+    pthread_t tid = pthread_self();
+    char name_buf[50] = { 0 };
+    pthread_getname_np(tid, name_buf, ARRAY_LEN(name_buf));
+
+    fprintf(stderr, "Thread `%s` panicked at (%s: %s: %d)\n%s\n",
+            name_buf, file, func, line, msg);
+    abort();
+}
+
+#define PANIC(msg) \
+    ((void) (_impl_panic((msg), __FILE__, __func__, __LINE__), 0))
+
+
+#define MUST_ZERO(value)                        \
+    ((value)                                    \
+        ? PANIC("`" #value "` is not 0"), value \
+        : value)
+
+
+#define NON_NULL(ptr)                          \
+    ((ptr) == NULL                             \
+        ? PANIC("`" #ptr "` is NULL"), ptr     \
+        : ptr)
+
+
 #define UNREACHABLE PANIC("unreachable")
 #define TODO(msg) PANIC("TODO: " msg)
 #define UNUSED __attribute__((unused))
