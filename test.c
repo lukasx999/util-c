@@ -166,11 +166,15 @@ void test_string_expand_query(void) {
     test_str(s, "abc");
     free(s);
 
-    // TODO:
-    // s = string_expand_query("abc", "", "X");
-    // NON_NULL(s);
-    // test_str(s, "XaXbXcX");
-    // free(s);
+    s = string_expand_query("abc", "", "X");
+    NON_NULL(s);
+    test_str(s, "XaXbXcX");
+    free(s);
+
+    s = string_expand_query("abc", "", "ABC");
+    NON_NULL(s);
+    test_str(s, "ABCaABCbABCcABC");
+    free(s);
 
 }
 

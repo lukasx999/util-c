@@ -162,20 +162,11 @@ char *string_expand_query(const char *str, const char *query, const char *sub) {
     if (buf == NULL) return NULL;
     strncpy(buf, str, bufsize);
 
-    if (strlen(query) == 0) {
-        // TODO:
-        TODO("edgecase: query is empty string");
-    }
-
     char *last = NULL;
     char *tmp = buf;
     while ((tmp = strstr(tmp, query)) != NULL) {
 
-        // examples:
-        // foo %%% bar %%% baz
-        // foo AAAAAAAA bar AAAAAAAA baz
-        // foo A bar A baz
-        // foo
+        printf("buf: %s\n", buf);
 
         // push the rest of the buffer back (or move it forward)
         // to make space for replacement string
@@ -185,12 +176,22 @@ char *string_expand_query(const char *str, const char *query, const char *sub) {
             strlen(tmp) - strlen(query)
         );
 
-        strncpy(tmp, sub, strlen(sub));
-        tmp++;
+        // insert replacement string
+        strncpy(tmp++, sub, strlen(sub));
+
+        // empty query should place the replacement string inbetween
+        // the source string, hence incrementing tmp manually, as strstr()
+        // returns the haystack (tmp) itself when the needle (query) is empty
+        if (!strlen(query))
+            tmp += strlen(sub);
 
         // this will point to one byte after the last char
-        // of the final substituted string in the last iteration
+        // of the final substituted string in the last iteration inside of buf
         last = tmp + strlen(sub);
+
+        // when incrementing tmp multiple times, the very last iteration will
+        // have tmp pointing to invalid memory (after the nullbyte)
+        if (tmp == buf + bufsize) break;
 
     }
 
