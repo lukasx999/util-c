@@ -101,16 +101,15 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     NON_NULL(str);
     NON_NULL(delim);
 
-    // eg: "foo bar": 1 delim -> 2 tokens
-    size_t count = get_substring_count(str, delim) + 1;
+    size_t tokencount = get_substring_count(str, delim) + 1;
 
-    char **tokens = malloc(count * sizeof(char*));
+    char **tokens = malloc(tokencount * sizeof(char*));
     NON_NULL(tokens); // TODO: handle error
     size_t i = 0;
 
     size_t bufsize = strlen(str) + 1; // TODO: get size of largest token
 
-    for (size_t i=0; i < count; ++i) {
+    for (size_t i=0; i < tokencount; ++i) {
         tokens[i] = malloc(bufsize * sizeof(char));
         NON_NULL(tokens[i]);
     }
@@ -126,11 +125,11 @@ struct StringArray tokenize_string(const char *str, const char *delim) {
     while ((tok = strtok(NULL, delim)) != NULL)
         strncpy(tokens[i++], tok, bufsize);
 
-    assert(i == count);
+    assert(i == tokencount);
 
     return (struct StringArray) {
         .strings = tokens,
-        .count   = count,
+        .count   = tokencount,
         .bufsize = bufsize,
     };
 }
@@ -165,8 +164,6 @@ char *string_expand_query(const char *str, const char *query, const char *sub) {
     char *last = NULL;
     char *tmp = buf;
     while ((tmp = strstr(tmp, query)) != NULL) {
-
-        printf("buf: %s\n", buf);
 
         // push the rest of the buffer back (or move it forward)
         // to make space for replacement string

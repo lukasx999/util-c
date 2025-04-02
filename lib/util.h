@@ -66,7 +66,6 @@ noreturn static void _impl_panic(
 
 #endif // __GNUC__
 
-
 #define UNREACHABLE PANIC("unreachable")
 #define TODO(msg) PANIC("not implemented yet: " msg)
 #define UNIMPLEMENTED(msg) PANIC("not implemented: " msg)

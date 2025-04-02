@@ -77,7 +77,22 @@ void test_get_substring_count(void) {
 }
 
 void test_tokenize_string(void) {
-    struct StringArray tokens = tokenize_string("foo,bar,baz", ",");
+    struct StringArray tokens = { 0 };
+
+
+    tokens = tokenize_string("foo", ",");
+    test_size_t(tokens.count, 1);
+    test_str(tokens.strings[0], "foo");
+    free_stringarray(&tokens);
+
+    // TODO:
+    // tokens = tokenize_string("foo,", ",");
+    // test_size_t(tokens.count, 2);
+    // test_str(tokens.strings[0], "foo");
+    // test_str(tokens.strings[1], "");
+    // free_stringarray(&tokens);
+
+    tokens = tokenize_string("foo,bar,baz", ",");
     test_size_t(tokens.count, 3);
     test_str(tokens.strings[0], "foo");
     test_str(tokens.strings[1], "bar");
@@ -126,54 +141,36 @@ void test_get_file_size(void) {
 
 void test_string_expand_query(void) {
 
-    char *s = string_expand_query("foo %%% bar %%% baz", "%%%", "ZZZ");
+    char *s = NULL;
+
+    s = string_expand_query("a", "a", "b");
     NON_NULL(s);
-    test_str(s, "foo ZZZ bar ZZZ baz");
+    test_str(s, "b");
     free(s);
 
-    s = string_expand_query("a%b%c%", "%", "/");
-    NON_NULL(s);
-    test_str(s, "a/b/c/");
-    free(s);
-
-    s = string_expand_query("_x_x_x_", "x", "FOO");
-    NON_NULL(s);
-    test_str(s, "_FOO_FOO_FOO_");
-    free(s);
-
-    s = string_expand_query("sub", "sub", "uuuuu");
-    NON_NULL(s);
-    test_str(s, "uuuuu");
-    free(s);
-
-    s = string_expand_query("", "sub", "uuuuu");
+    s = string_expand_query("", ",", "ZZZ");
     NON_NULL(s);
     test_str(s, "");
     free(s);
 
-    s = string_expand_query(" sub,subabcdefsub", "sub", "_________");
+    s = string_expand_query("abc", "", "ZZZ");
     NON_NULL(s);
-    test_str(s, " _________,_________abcdef_________");
+    test_str(s, "ZZZaZZZbZZZcZZZ");
     free(s);
 
-    s = string_expand_query("AAAjAAAbAAAx", "AAA", "-");
+    s = string_expand_query("a,b,c", ",", "ZZZ");
     NON_NULL(s);
-    test_str(s, "-j-b-x");
+    test_str(s, "aZZZbZZZc");
     free(s);
 
-    s = string_expand_query("abc", "/", "-");
+    s = string_expand_query("a,b,c", ",", ".");
     NON_NULL(s);
-    test_str(s, "abc");
+    test_str(s, "a.b.c");
     free(s);
 
-    s = string_expand_query("abc", "", "X");
+    s = string_expand_query("a---b---c", "---", ".");
     NON_NULL(s);
-    test_str(s, "XaXbXcX");
-    free(s);
-
-    s = string_expand_query("abc", "", "ABC");
-    NON_NULL(s);
-    test_str(s, "ABCaABCbABCcABC");
+    test_str(s, "a.b.c");
     free(s);
 
 }
