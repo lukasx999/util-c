@@ -4,91 +4,119 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include <pthread.h>
 #include <stdnoreturn.h>
+#include <stdarg.h>
+
+
+// `#define VERSION_I_DONT_CARE`, to ignore c standard checks
+
+
+#define __STDC23 __STDC_VERSION__ >= 202000
+#define __STDC11 __STDC_VERSION__ == 201112L
 
 
 
-#define ARRAY_LEN(xs) (sizeof(xs) / sizeof *(xs))
 
-
-
-noreturn static void _impl_panic(
-    const char *msg,
+noreturn static inline void _impl_panic(
     const char *file,
     const char *func,
-    int line
+    int line,
+    const char *fmt,
+    ...
 ) {
+    va_list va;
+    va_start(va, fmt);
 
-#ifdef _GNU_SOURCE
-    pthread_t tid = pthread_self();
-    char name_buf[16] = { 0 };
-    pthread_getname_np(tid, name_buf, ARRAY_LEN(name_buf));
+    fprintf(stderr, "Panicked at (%s: %s: %d)\n", file, func, line);
+    vfprintf(stderr, fmt, va);
+    fprintf(stderr, "\n");
 
-    fprintf(stderr, "Thread `%s` panicked at (%s: %s: %d)\n%s\n",
-            name_buf, file, func, line, msg);
-#else
-    fprintf(stderr, "Panicked at (%s: %s: %d)\n%s\n", file, func, line, msg);
-#endif // _GNU_SOURCE
-
+    va_end(va);
     abort();
 }
 
 #define PANIC(msg) \
-    ((void) (_impl_panic((msg), __FILE__, __func__, __LINE__), 0))
+    ((void) (_impl_panic(__FILE__, __func__, __LINE__, (msg)), 0))
 
 
-#define MUST_ZERO(value)                        \
-    ((value)                                    \
-        ? PANIC("`" #value "` is not 0"), value \
-        : value)
+#if __STDC23 || defined(VERSION_I_DONT_CARE)
+
+#define PANIC_FMT(fmt, ...) \
+    ((void) (_impl_panic(__FILE__, __func__, __LINE__, (fmt) __VA_OPT__(,) __VA_ARGS__), 0))
+
+#endif
 
 
-// braced-groups are a GNU extension
-// #ifdef __GNUC__
-#if 0
+static inline int _impl_must_zero(
+    int value,
+    const char *name,
+    const char *file,
+    const char *func,
+    int line
+) {
+    if (value) _impl_panic(file, func, line, "%s is not 0", name);
+    return value;
+}
 
-#define NON_NULL(ptr)                              \
-    ({                                             \
-        void *____ptr = (ptr);                     \
-        ____ptr == NULL                            \
-            ? PANIC("`" #ptr "` is NULL"), ____ptr \
-            : ____ptr;                             \
-    })
-
-#else // __GNUC__
-
-// NOTE: this macro is unsafe and might execute side-effects twice
-#define NON_NULL(ptr)                          \
-    ((ptr) == NULL                             \
-        ? PANIC("`" #ptr "` is NULL"), ptr     \
-        : ptr)
-
-#endif // __GNUC__
-
-#define UNREACHABLE PANIC("unreachable")
-#define TODO(msg) PANIC("not implemented yet: " msg)
-#define UNIMPLEMENTED(msg) PANIC("not implemented: " msg)
-#define UNUSED __attribute__((unused))
-#define DISCARD(value) (void) (value); assert(0)
+#define MUST_ZERO(value) \
+    _impl_must_zero((value), #value, __FILE__, __func__, __LINE__)
 
 
 
-#define PRINT(x) do {           \
-    const char *fmt =           \
-        _Generic((x),           \
-            char:   "%c",       \
-            int:    "%d",       \
-            float:  "%f",       \
-            size_t: "%lu",      \
-            char*:  "%s",       \
-            void*:  "%p"        \
-    );                          \
-    printf("(%s:%d) " #x " = ", \
-        __FILE__, __LINE__);    \
-    printf(fmt, (x));           \
-    printf("\n");               \
+static inline void *_impl_non_null(
+    void *ptr,
+    const char *name,
+    const char *file,
+    const char *func,
+    int line
+) {
+    if (ptr == NULL) _impl_panic(file, func, line, "%s is not NULL", name);
+    return ptr;
+}
+
+#define NON_NULL(ptr) \
+    _impl_non_null((void*) (ptr), #ptr, __FILE__, __func__, __LINE__)
+
+
+
+#define ARRAY_LEN(xs) \
+    (sizeof(xs) / sizeof *(xs))
+
+#define UNREACHABLE \
+    PANIC("unreachable")
+
+#define TODO(msg) \
+    PANIC("not implemented yet: " msg)
+
+#define UNIMPLEMENTED(msg) \
+    PANIC("not implemented: " msg)
+
+#define UNUSED \
+    __attribute__((unused))
+
+#define DISCARD(value) \
+    ((void) (value))
+
+
+
+#if __STDC11 || defined(VERSION_I_DONT_CARE)
+
+#define PRINT(x) do {                                \
+    const char *fmt =                                \
+        _Generic((x),                                \
+            char:   "%c",                            \
+            int:    "%d",                            \
+            float:  "%f",                            \
+            size_t: "%lu",                           \
+            char*:  "%s",                            \
+            void*:  "%p"                             \
+    );                                               \
+    printf("(%s:%d) " #x " = ", __FILE__, __LINE__); \
+    printf(fmt, (x));                                \
+    printf("\n");                                    \
 } while (0)
+
+#endif
 
 
 
