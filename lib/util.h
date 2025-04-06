@@ -8,7 +8,7 @@
 #include <stdarg.h>
 
 
-// `#define VERSION_I_DONT_CARE`, to ignore c standard checks
+// `#define VERSION_I_DONT_CARE`, to ignore C standard checks
 
 
 #define __STDC23 __STDC_VERSION__ >= 202000
@@ -98,6 +98,7 @@ static inline void *_impl_non_null(
     ((void) (value))
 
 
+
 #if __STDC23 || defined(VERSION_I_DONT_CARE)
 
 #define SWAP(x, y)         \
@@ -117,7 +118,6 @@ static inline void *_impl_non_null(
     } while (0)
 
 #endif
-
 
 
 
