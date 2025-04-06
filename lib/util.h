@@ -98,6 +98,28 @@ static inline void *_impl_non_null(
     ((void) (value))
 
 
+#if __STDC23 || defined(VERSION_I_DONT_CARE)
+
+#define SWAP(x, y)         \
+    do {                   \
+        typeof(x) tmp = x; \
+        x = y;             \
+        y = tmp;           \
+    } while (0)
+
+#else
+
+#define SWAP(T, x, y) \
+    do {              \
+        T tmp = x;    \
+        x = y;        \
+        y = tmp;      \
+    } while (0)
+
+#endif
+
+
+
 
 #if __STDC11 || defined(VERSION_I_DONT_CARE)
 
