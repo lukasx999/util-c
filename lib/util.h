@@ -1,5 +1,6 @@
-#ifndef _UTIL_H
-#define _UTIL_H
+#pragma once
+#ifndef __UTIL_H
+#define __UTIL_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -159,4 +160,4 @@ static inline void *_impl_non_null(
 
 
 
-#endif // _UTIL_H
+#endif // __UTIL_H
