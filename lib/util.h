@@ -1,6 +1,5 @@
-#pragma once
-#ifndef __UTIL_H
-#define __UTIL_H
+#ifndef ___UTIL_H
+#define ___UTIL_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +44,7 @@ noreturn static inline void _impl_panic(
     va_list va;
     va_start(va, fmt);
 
-    fprintf(stderr, "Panicked at (%s: %s: %d)\n", file, func, line);
+    fprintf(stderr, "Panicked at %s: %s: %d\n", file, func, line);
     vfprintf(stderr, fmt, va);
     fprintf(stderr, "\n");
 
@@ -160,4 +159,4 @@ static inline void *_impl_non_null(
 
 
 
-#endif // __UTIL_H
+#endif // ___UTIL_H
