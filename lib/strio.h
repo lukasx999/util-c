@@ -72,7 +72,7 @@ char *read_entire_file(const char *path) {
     size_t bytes_read = fread(buf, sizeof(char), size, file);
     if (bytes_read < (size_t) size) {
         if (ferror(file) < 0) return NULL;
-        if (feof(file) < 0) UNREACHABLE;
+        if (feof(file) < 0) UNREACHABLE();
     }
 
     if (fclose(file) == EOF) return NULL;

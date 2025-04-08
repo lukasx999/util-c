@@ -12,7 +12,7 @@ DYNARRAY_DECL(List, list, int)
 DYNARRAY_IMPL(List, list, int)
 
 #include "util.h"
-#include "io.h"
+#include "strio.h"
 #include "test.h"
 
 

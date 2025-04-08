@@ -13,7 +13,10 @@
 
 #define __STDC23 __STDC_VERSION__ >= 202000
 #define __STDC11 __STDC_VERSION__ == 201112L
+#define __STDC99 // TODO:
 
+
+#ifdef UTIL_COLORS
 
 #define COLOR_RED           "\33[31m"
 #define COLOR_BLUE          "\33[34m"
@@ -32,6 +35,16 @@
 #define COLOR_STRIKETHROUGH "\33[9m"
 #define COLOR_END           "\33[0m"
 
+#endif // UTIL_COLORS
+
+
+#ifdef __STDC11
+
+#define NORETURN noreturn
+#else
+#define NORETURN __attribute((noreturn))
+
+#endif // __STDC11
 
 
 noreturn static inline void _impl_panic(
