@@ -127,6 +127,9 @@ static inline void *_impl_non_null(
 #define DISCARD(value) \
     ((void) (value))
 
+#define NO_DISCARD \
+    __attribute__((warn_unused_result))
+
 
 
 #if __STDC23 || defined(VERSION_I_DONT_CARE)
