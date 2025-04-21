@@ -16,6 +16,14 @@ DYNARRAY_IMPL(List, list, int)
 #include "test.h"
 
 
+void test_clamp(void) {
+    test_int(CLAMP(50, 0, 25), 25);
+    test_int(CLAMP(-50, 0, 25), 0);
+    test_int(CLAMP(50, 0, 100), 50);
+    test_int(CLAMP(0, 0, 0), 0);
+    test_int(CLAMP(10, 0, 0), 0);
+    test_int(CLAMP(2, 1, 2), 2);
+}
 
 void test_arena(void) {
     Arena arena = { 0 };
@@ -177,6 +185,7 @@ void test_string_expand_query(void) {
 
 int main(void) {
 
+    test_clamp();
     test_string_expand_query();
     test_arena();
     test_dynarray();
