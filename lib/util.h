@@ -131,7 +131,7 @@ static inline void *_impl_non_null(
     __attribute__((warn_unused_result))
 
 #define CLAMP(value, min, max) \
-    ((value) > (max) ? (max) : (value) < (min) ? (min) : (value))
+    (assert(min <= max), (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
 
 
 #if __STDC23 || defined(VERSION_I_DONT_CARE)

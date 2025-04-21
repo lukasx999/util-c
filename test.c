@@ -23,6 +23,7 @@ void test_clamp(void) {
     test_int(CLAMP(0, 0, 0), 0);
     test_int(CLAMP(10, 0, 0), 0);
     test_int(CLAMP(2, 1, 2), 2);
+    test_int(CLAMP(2, 2, 2), 2);
 }
 
 void test_arena(void) {
