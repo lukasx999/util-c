@@ -25,6 +25,9 @@
 #define test_int(value, expected) \
     test_eq(value, expected, "%d")
 
+#define test_char(value, expected) \
+    test_eq(value, expected, "%c")
+
 #define test_str(value, expected) \
     test(value, expected, !strcmp((value), (expected)), "%s")
 

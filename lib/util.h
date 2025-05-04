@@ -133,6 +133,10 @@ static inline void *_impl_non_null(
 #define CLAMP(value, min, max) \
     (assert(min <= max), (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
 
+#define LAST(xs) \
+    ((xs)[ARRAY_LEN((xs))-1])
+
+
 
 #if __STDC23 || defined(VERSION_I_DONT_CARE)
 

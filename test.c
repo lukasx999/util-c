@@ -184,6 +184,25 @@ void test_string_expand_query(void) {
 
 }
 
+void test_last(void) {
+
+    int xs[] = { 1, 2, 3 };
+    test_int(LAST(xs), 3);
+
+    int xs2[] = { 1 };
+    test_int(LAST(xs2), 1);
+
+    char str[] = "foobar";
+    test_char(LAST(str), 'r');
+
+    char str2[] = "a";
+    test_char(LAST(str2), 'a');
+
+    char str3[] = "";
+    test_char(LAST(str3), '\0');
+
+}
+
 int main(void) {
 
     test_clamp();
