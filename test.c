@@ -193,18 +193,24 @@ void test_last(void) {
     test_int(LAST(xs2), 1);
 
     char str[] = "foobar";
-    test_char(LAST(str), 'r');
+    test_char(LAST(str), '\0');
+
+}
+
+void test_last_char(void) {
+
+    char str[] = "foobar";
+    test_char(LASTCHAR(str), 'r');
 
     char str2[] = "a";
-    test_char(LAST(str2), 'a');
-
-    char str3[] = "";
-    test_char(LAST(str3), '\0');
+    test_char(LASTCHAR(str2), 'a');
 
 }
 
 int main(void) {
 
+    test_last_char();
+    test_last();
     test_clamp();
     test_string_expand_query();
     test_arena();

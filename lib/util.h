@@ -136,6 +136,9 @@ static inline void *_impl_non_null(
 #define LAST(xs) \
     ((xs)[ARRAY_LEN((xs))-1])
 
+#define LASTCHAR(str) \
+    ((str)[strlen((str))-1])
+
 
 
 #if __STDC23 || defined(VERSION_I_DONT_CARE)
