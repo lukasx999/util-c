@@ -39,11 +39,9 @@
 
 
 #ifdef __STDC11
-
 #define NORETURN noreturn
 #else
 #define NORETURN __attribute((noreturn))
-
 #endif // __STDC11
 
 
@@ -127,7 +125,12 @@ static inline void *_impl_non_null(
 #define DISCARD(value) \
     ((void) (value))
 
+#ifdef __STDC23
 #define NO_DISCARD \
+[[nodiscard]]
+#else
+#define NO_DISCARD \
+#endif // __STDC23
     __attribute__((warn_unused_result))
 
 #define CLAMP(value, min, max) \
