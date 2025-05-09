@@ -125,13 +125,13 @@ static inline void *_impl_non_null(
 #define DISCARD(value) \
     ((void) (value))
 
-#ifdef __STDC23
+#if __STDC23
 #define NO_DISCARD \
 [[nodiscard]]
 #else
 #define NO_DISCARD \
-#endif // __STDC23
     __attribute__((warn_unused_result))
+#endif // __STDC23
 
 #define CLAMP(value, min, max) \
     (assert(min <= max), (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
