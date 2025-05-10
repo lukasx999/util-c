@@ -142,6 +142,9 @@ static inline void *_impl_non_null(
 #define LASTCHAR(str) \
     ((str)[strlen((str))-1])
 
+#define LERP(a, b, t) \
+    ((a) + (t) * ((b) - (a)))
+
 
 
 #if __STDC23 || defined(VERSION_I_DONT_CARE)
