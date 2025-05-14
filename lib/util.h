@@ -134,7 +134,8 @@ static inline void *_impl_non_null(
 #endif // __STDC23
 
 #define CLAMP(value, min, max) \
-    (assert(min <= max), (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
+    (assert(min <= max),       \
+    (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
 
 #define LAST(xs) \
     ((xs)[ARRAY_LEN((xs))-1])
@@ -144,6 +145,8 @@ static inline void *_impl_non_null(
 
 #define LERP(a, b, t) \
     ((a) + (t) * ((b) - (a)))
+
+#define NOP()
 
 
 
