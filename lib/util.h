@@ -1,5 +1,5 @@
-#ifndef ___UTIL_H
-#define ___UTIL_H
+#ifndef _VER_H
+#define _VER_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -8,7 +8,10 @@
 #include <stdarg.h>
 
 
-// `#define VERSION_I_DONT_CARE`, to ignore C standard checks
+//
+// ver.h - Utility C functions/macros
+//
+
 
 
 #define __STDC23 __STDC_VERSION__ >= 202000
@@ -16,7 +19,7 @@
 #define __STDC99 // TODO:
 
 
-#ifdef UTIL_COLORS
+#ifdef UTIL_ANSI_COLORS
 
 #define COLOR_RED           "\33[31m"
 #define COLOR_BLUE          "\33[34m"
@@ -35,23 +38,17 @@
 #define COLOR_STRIKETHROUGH "\33[9m"
 #define COLOR_END           "\33[0m"
 
-#endif // UTIL_COLORS
+#endif // UTIL_ANSI_COLORS
 
 
 #ifdef __STDC11
-#define NORETURN noreturn
+    #define NORETURN noreturn
 #else
-#define NORETURN __attribute((noreturn))
+    #define NORETURN __attribute((noreturn))
 #endif // __STDC11
 
 
-noreturn static inline void _impl_panic(
-    const char *file,
-    const char *func,
-    int line,
-    const char *fmt,
-    ...
-) {
+noreturn static inline void _impl_panic(const char *file, const char *func, int line, const char *fmt, ...) {
     va_list va;
     va_start(va, fmt);
 
@@ -75,13 +72,7 @@ noreturn static inline void _impl_panic(
 #endif
 
 
-static inline int _impl_must_zero(
-    int value,
-    const char *name,
-    const char *file,
-    const char *func,
-    int line
-) {
+static inline int _impl_must_zero(int value, const char *name, const char *file, const char *func, int line) {
     if (value) _impl_panic(file, func, line, "%s is not 0", name);
     return value;
 }
@@ -91,19 +82,13 @@ static inline int _impl_must_zero(
 
 
 
-static inline void *_impl_non_null(
-    void *ptr,
-    const char *name,
-    const char *file,
-    const char *func,
-    int line
-) {
+static inline void *_impl_non_null(void *ptr, const char *name, const char *file, const char *func, int line) {
     if (ptr == NULL) _impl_panic(file, func, line, "%s is not NULL", name);
     return ptr;
 }
 
 #define NON_NULL(ptr) \
-    _impl_non_null((void*) (ptr), #ptr, __FILE__, __func__, __LINE__)
+    _impl_non_null((ptr), #ptr, __FILE__, __func__, __LINE__)
 
 
 
@@ -125,13 +110,19 @@ static inline void *_impl_non_null(
 #define DISCARD(value) \
     ((void) (value))
 
+
+
 #if __STDC23
-#define NO_DISCARD \
-[[nodiscard]]
+    #define NO_DISCARD \
+        [[nodiscard]]
+
 #else
-#define NO_DISCARD \
-    __attribute__((warn_unused_result))
+    #define NO_DISCARD \
+        __attribute__((warn_unused_result))
+
 #endif // __STDC23
+
+
 
 #define CLAMP(value, min, max) \
     (assert(min <= max),       \
@@ -150,29 +141,29 @@ static inline void *_impl_non_null(
 
 
 
-#if __STDC23 || defined(VERSION_I_DONT_CARE)
+#ifdef __STDC23
 
-#define SWAP(x, y)         \
-    do {                   \
-        typeof(x) tmp = x; \
-        x = y;             \
-        y = tmp;           \
-    } while (0)
+    #define SWAP(x, y)         \
+        do {                   \
+            typeof(x) tmp = x; \
+            x = y;             \
+            y = tmp;           \
+        } while (0)
 
 #else
 
-#define SWAP(T, x, y) \
-    do {              \
-        T tmp = x;    \
-        x = y;        \
-        y = tmp;      \
-    } while (0)
+    #define SWAP(T, x, y) \
+        do {              \
+            T tmp = x;    \
+            x = y;        \
+            y = tmp;      \
+        } while (0)
 
-#endif
+#endif // __STDC23
 
 
 
-#if __STDC11 || defined(VERSION_I_DONT_CARE)
+#ifdef __STDC11
 
 #define PRINT(x) do {                                \
     const char *fmt =                                \
@@ -189,8 +180,8 @@ static inline void *_impl_non_null(
     printf("\n");                                    \
 } while (0)
 
-#endif
+#endif // __STDC11
 
 
 
-#endif // ___UTIL_H
+#endif // _VER_H
