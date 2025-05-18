@@ -19,7 +19,7 @@
 #define __STDC99 // TODO:
 
 
-#ifdef UTIL_ANSI_COLORS
+#ifdef VER_ANSI_COLORS
 
 #define COLOR_RED           "\33[31m"
 #define COLOR_BLUE          "\33[34m"
@@ -38,7 +38,7 @@
 #define COLOR_STRIKETHROUGH "\33[9m"
 #define COLOR_END           "\33[0m"
 
-#endif // UTIL_ANSI_COLORS
+#endif // VER_ANSI_COLORS
 
 
 #ifdef __STDC11
