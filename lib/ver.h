@@ -88,7 +88,7 @@ static inline void *_impl_non_null(void *ptr, const char *name, const char *file
 }
 
 #define NON_NULL(ptr) \
-    _impl_non_null((ptr), #ptr, __FILE__, __func__, __LINE__)
+    _impl_non_null((void*) (ptr), #ptr, __FILE__, __func__, __LINE__)
 
 
 
@@ -127,6 +127,12 @@ static inline void *_impl_non_null(void *ptr, const char *name, const char *file
 #define CLAMP(value, min, max) \
     (assert(min <= max),       \
     (value) > (max) ? (max) : (value) < (min) ? (min) : (value))
+
+#define MIN(a, b) \
+    ((a) < (b) ? (a) : (b))
+
+#define MAX(a, b) \
+    ((a) > (b) ? (a) : (b))
 
 #define LAST(xs) \
     ((xs)[ARRAY_LEN((xs))-1])
